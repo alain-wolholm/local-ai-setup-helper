@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# Per ADR-0001, Windows is a Supported Platform required for the first release.
+# Every later slice must land on a green Windows build, so CI is Windows-first.
+jobs:
+  windows:
+    name: Build & test (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          rustc --version
+          cargo --version
+
+      # --locked fails if Cargo.lock is missing or out of date, enforcing the
+      # committed-lockfile guarantee from ADR-0025.
+      - name: Build
+        run: cargo build --locked --verbose
+
+      - name: Test
+        run: cargo test --locked --verbose
