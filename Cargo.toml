@@ -6,25 +6,11 @@ rust-version = "1.74"
 description = "Shardsmith scanner: evidence-backed snapshot of local compute resources"
 publish = false
 
-# Single package with two targets, auto-discovered from src/:
-#   - src/lib.rs  -> the platform-neutral library crate `shardsmith`
-#   - src/main.rs -> the thin `shardsmith` binary stub
-# Keeping them in one package (rather than splitting crates) is deliberate for
-# this scaffolding slice; later foundation slices may introduce a workspace.
-
 [dependencies]
-# No dependencies yet. Per ADR-0025, dependencies are added only with a concrete
-# benefit, minimized features, and a check that they preserve offline behavior.
 
-# ADR-0030 (contain unsafe Rust at native boundaries): strict unsafe-operation
-# lints are enabled from the first slice. This package-scope policy applies to
-# both the library and the binary.
+# ADR-0030: strict unsafe lints from the first slice. deny (not forbid) so a
+# future native adapter can re-enable unsafe locally with a documented
+# invariant; forbid could not be overridden at the boundary.
 [lints.rust]
-# Deny `unsafe` package-wide so domain, orchestration, reconciliation, and
-# report code stays safe. Deny (not forbid) is deliberate: future native
-# adapter modules may re-enable unsafe locally with `#[allow(unsafe_code)]`
-# plus a documented invariant — forbid could not be overridden at the boundary.
 unsafe_code = "deny"
-# Require an explicit `unsafe {}` block even inside an `unsafe fn`, so every
-# unsafe operation at a native boundary is individually justified.
 unsafe_op_in_unsafe_fn = "deny"
